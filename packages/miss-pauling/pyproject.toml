@@ -1,0 +1,33 @@
+[project]
+name = "miss-pauling"
+version = "0.1.0"
+description = "Web dashboard and FastDL service for the 4v4 PASS Time Europe TF2 community"
+requires-python = ">=3.12"
+dependencies = [
+    "aiofiles>=24.1.0",
+    "alembic>=1.16.5",
+    "fastapi>=0.118.0",
+    "httpx>=0.28.1",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.6",
+    "pydantic>=2.11.9",
+    "pydantic-settings>=2.11.0",
+    "python-dotenv>=1.2.2",
+    "python-jose>=3.5.0",
+    "python-multipart>=0.0.26",
+    "python3-openid>=3.2.0",
+    "rcon>=2.4.9",
+    "requests>=2.32.5",
+    "sqlalchemy>=2.0.43",
+    "uvicorn>=0.37.0",
+    "uvloop>=0.21.0",
+    "watchfiles>=1.1.0",
+    "websockets>=15.0.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/miss_pauling"]

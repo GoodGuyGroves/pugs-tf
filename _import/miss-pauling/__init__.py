@@ -1,1 +1,0 @@
-# Miss Pauling - TF2 Community Management Platform
