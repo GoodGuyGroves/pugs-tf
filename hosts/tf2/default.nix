@@ -8,6 +8,7 @@
 {
   imports = [
     ./comin.nix
+    ./firewall.nix
     ./nginx.nix
     ./podman.nix
     ./secrets.nix
@@ -67,5 +68,4 @@
 
   # -- Future configuration ---------------------------------------------
   # TODO: import hardware-configuration.nix once the machine is provisioned
-  # TODO: firewall rules for game ports, SourceTV, and HTTP (Issue #20)
 }
