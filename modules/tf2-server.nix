@@ -306,7 +306,22 @@ in
           description = "Check for pending restart of TF2 server ${name}";
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${pkgs.bash}/bin/bash -c 'echo \"checking restart for ${name}\"'";
+            ExecStart = pkgs.writeShellScript "check-restart-${name}" ''
+              MGMT_URL="http://127.0.0.1:${toString srv.managementPort}"
+
+              # Check if wrapper is reachable and get status
+              STATUS=$(${pkgs.curl}/bin/curl -sf "$MGMT_URL/status" 2>/dev/null) || exit 0
+
+              PENDING=$(echo "$STATUS" | ${pkgs.jq}/bin/jq -r '.pendingRestart')
+              PLAYERS=$(echo "$STATUS" | ${pkgs.jq}/bin/jq -r '.playerCount')
+
+              if [ "$PENDING" = "true" ] && [ "$PLAYERS" = "0" ]; then
+                echo "Server ${name}: pending restart and empty, triggering shutdown"
+                ${pkgs.curl}/bin/curl -sf -X POST "$MGMT_URL/shutdown" || true
+              elif [ "$PENDING" = "true" ]; then
+                echo "Server ${name}: pending restart but $PLAYERS players online, waiting"
+              fi
+            '';
           };
         }
       )

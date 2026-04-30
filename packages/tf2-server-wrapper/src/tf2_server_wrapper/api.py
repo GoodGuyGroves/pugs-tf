@@ -29,6 +29,12 @@ class StatusResponse(BaseModel):
     managementPort: int
     uptime: float  # seconds
     pendingRestart: bool
+    playerCount: int
+
+
+class ShutdownResponse(BaseModel):
+    status: str
+    serverName: str
 
 
 class PendingRestartResponse(BaseModel):
@@ -52,6 +58,7 @@ async def status() -> StatusResponse:
         managementPort=_config.managementPort,
         uptime=uptime,
         pendingRestart=_pending_restart,
+        playerCount=0,  # TODO: query via RCON or A2S
     )
 
 
@@ -72,3 +79,11 @@ async def clear_pending_restart() -> PendingRestartResponse:
     global _pending_restart
     _pending_restart = False
     return PendingRestartResponse(pendingRestart=False, serverName=_config.serverName)
+
+
+@app.post("/shutdown")
+async def shutdown() -> ShutdownResponse:
+    """Gracefully shutdown SRCDS. The container will auto-restart via Podman."""
+    if _srcds:
+        await _srcds.graceful_shutdown()
+    return ShutdownResponse(status="shutting_down", serverName=_config.serverName)
