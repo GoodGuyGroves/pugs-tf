@@ -240,12 +240,64 @@ in
         enabledServers
       ++ [ "d /var/lib/tf2/maps 0755 root root - -" ];
 
-    # -- TODO: Podman quadlet containers (Phase 2) ---------------------------
-    # The quadlet-nix container definitions will be added here once the
-    # tf2-server-wrapper container image is built (Issue #X, Phase 2).
-    # Each enabled server will get a virtualisation.quadlet.containers.<name>
-    # definition with appropriate port mappings, volume mounts, and the
-    # config.json bind-mounted into the container.
+    # -- Podman quadlet containers ---------------------------------------------
+    # Each enabled server gets a quadlet-nix container definition that runs
+    # the TF2 server image with host networking (matches serveme.tf approach).
+    virtualisation.quadlet.containers = lib.mapAttrs
+      (name: srv: {
+        autoStart = true;
+
+        serviceConfig = {
+          Restart = "always";
+          RestartSec = "10";
+          TimeoutStartSec = "900";  # TF2 server can take a while to start
+        };
+
+        unitConfig = {
+          Description = "TF2 dedicated server ${name}";
+          After = [ "network-online.target" ];
+          Wants = [ "network-online.target" ];
+        };
+
+        containerConfig = {
+          # Image reference — placeholder until nix2container builds are wired in.
+          # Replace with a nix2container ref or a registry URL once the image is built.
+          image = "localhost/tf2-server:latest";
+
+          # Host networking — simplest approach, no port mapping needed.
+          # This is what serveme.tf uses for their game servers.
+          networks = [ "host" ];
+
+          # Volume mounts:
+          #   configs and plugins are read-only Nix store paths
+          #   maps and data are read-write persistent directories
+          #   config.json is the per-server configuration
+          volumes = [
+            "${toString srv.configs}:/tf2/configs:ro"
+            "${toString srv.plugins}:/tf2/plugins:ro"
+            "${srv.mapsDir}:/tf2/maps:rw"
+            "${srv.dataDir}:/tf2/data:rw"
+            "/etc/tf2-servers/${name}/config.json:/tf2/config.json:ro"
+            "${toString srv.rconPasswordFile}:/run/secrets/rcon_password:ro"
+          ] ++ lib.optionals (srv.svPasswordFile != null) [
+            "${toString srv.svPasswordFile}:/run/secrets/sv_password:ro"
+          ] ++ lib.optionals (srv.demostfApiKeyFile != null) [
+            "${toString srv.demostfApiKeyFile}:/run/secrets/demostf_api_key:ro"
+          ] ++ lib.optionals (srv.logstfApiKeyFile != null) [
+            "${toString srv.logstfApiKeyFile}:/run/secrets/logstf_api_key:ro"
+          ];
+
+          # Environment variables for the wrapper to discover server identity
+          environments = {
+            TF2_SERVER_NAME = srv.serverName;
+            TF2_SERVER_CONFIG_PATH = "/tf2/config.json";
+          };
+
+          # Run as the steam user inside the container
+          user = "steam";
+        };
+      })
+      enabledServers;
 
     # -- Pending restart check timers ----------------------------------------
     systemd.services = lib.mapAttrs'

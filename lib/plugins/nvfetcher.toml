@@ -1,0 +1,76 @@
+# lib/plugins/nvfetcher.toml
+#
+# nvfetcher configuration for automated SourceMod plugin hash updates.
+# Run `nvfetcher` in this directory to check for new releases.
+
+# --- GitHub-hosted plugins ---
+
+[demostf]
+src.github = "demostf/plugin"
+fetch.github = "demostf/plugin"
+
+[p4sstime]
+src.github = "p4sstime/p4sstime-server-resources"
+fetch.github = "p4sstime/p4sstime-server-resources"
+
+[soap]
+src.github = "sapphonie/SOAP-TF2DM"
+fetch.github = "sapphonie/SOAP-TF2DM"
+
+[neocurl]
+src.github = "sapphonie/SM-neocurl-ext"
+fetch.github = "sapphonie/SM-neocurl-ext"
+
+[rgl-server-resources]
+src.github = "RGLgg/server-resources-updater"
+fetch.github = "RGLgg/server-resources-updater"
+
+[mapdownloader]
+src.github = "spiretf/mapdownloader"
+fetch.github = "spiretf/mapdownloader"
+
+[auto-steam-update]
+src.github = "Sarabveer/SM-Plugins"
+fetch.github = "Sarabveer/SM-Plugins"
+
+# --- krus.dk plugins (no versioning, use manual source) ---
+# These plugins have no version numbers or release tags.
+# Bump the version string manually when upstream changes are detected.
+
+[logstf]
+src.manual = "unstable-2025-09-08"
+fetch.url = "https://sourcemod.krus.dk/logstf.zip"
+
+[afk]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/afk.zip"
+
+[classwarning]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/classwarning.zip"
+
+[medicstats]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/medicstats.zip"
+
+[pause]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/pause.zip"
+
+[recordstv]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/recordstv.zip"
+
+[restorescore]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/restorescore.zip"
+
+[supstats2]
+src.manual = "unstable-2026-04-30"
+fetch.url = "https://sourcemod.krus.dk/supstats2.zip"
+
+# --- alliedmods.net plugins (static URLs, manual version) ---
+
+[steamworks]
+src.manual = "git132"
+fetch.url = "https://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git132-linux.tar.gz"

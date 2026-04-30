@@ -105,10 +105,26 @@
         {
           configs = import ./lib/configs { inherit pkgs; };
 
-          # SourceMod plugins
+          # SourceMod plugins — individual derivations
           plugin-logstf = import ./lib/plugins/logstf.nix { inherit pkgs helpers; };
           plugin-demostf = import ./lib/plugins/demostf.nix { inherit pkgs helpers; };
           plugin-p4sstime = import ./lib/plugins/p4sstime.nix { inherit pkgs helpers; };
+          plugin-afk = import ./lib/plugins/afk.nix { inherit pkgs helpers; };
+          plugin-classwarning = import ./lib/plugins/classwarning.nix { inherit pkgs helpers; };
+          plugin-mapdownloader = import ./lib/plugins/mapdownloader.nix { inherit pkgs helpers; };
+          plugin-medicstats = import ./lib/plugins/medicstats.nix { inherit pkgs helpers; };
+          plugin-pause = import ./lib/plugins/pause.nix { inherit pkgs helpers; };
+          plugin-recordstv = import ./lib/plugins/recordstv.nix { inherit pkgs helpers; };
+          plugin-restorescore = import ./lib/plugins/restorescore.nix { inherit pkgs helpers; };
+          plugin-supstats2 = import ./lib/plugins/supstats2.nix { inherit pkgs helpers; };
+          plugin-neocurl = import ./lib/plugins/neocurl.nix { inherit pkgs helpers; };
+          plugin-soap = import ./lib/plugins/soap.nix { inherit pkgs helpers; };
+          plugin-rgl-server-resources = import ./lib/plugins/rgl-server-resources.nix { inherit pkgs helpers; };
+          plugin-steamworks = import ./lib/plugins/steamworks.nix { inherit pkgs helpers; };
+          plugin-auto-steam-update = import ./lib/plugins/auto-steam-update.nix { inherit pkgs helpers; };
+
+          # Combined SourceMod plugins — all active plugins merged via symlinkJoin
+          plugins = import ./lib/plugins { inherit pkgs helpers; };
 
           # Populated in later issues:
           # miss-pauling       = ...;

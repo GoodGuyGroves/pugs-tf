@@ -1,0 +1,85 @@
+# packages/tf2-container/Containerfile
+#
+# Multi-stage build for a TF2 dedicated server container.
+# Includes SteamCMD, TF2 (app 232250), MetaMod:Source, and SourceMod.
+#
+# Volume mount points (bind-mounted at runtime):
+#   /tf2/configs  — server configuration files (ro)
+#   /tf2/plugins  — SourceMod plugins (ro)
+#   /tf2/maps     — map files (rw, shared across instances)
+#   /tf2/data     — per-server data: demos, logs, etc. (rw)
+
+# =============================================================================
+# Stage 1: Install SteamCMD and TF2 dedicated server
+# =============================================================================
+FROM ubuntu:24.04 AS base
+
+ARG STEAMCMD_URL="https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz"
+ARG METAMOD_URL="https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1217-linux.tar.gz"
+ARG SOURCEMOD_URL="https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7196-linux.tar.gz"
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install SteamCMD dependencies
+RUN dpkg --add-architecture i386 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        lib32gcc-s1 \
+        lib32stdc++6 \
+        lib32z1 \
+        ca-certificates \
+        curl \
+        python3 \
+        python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create unprivileged steam user
+RUN useradd -m -d /home/steam -s /bin/bash steam
+
+USER steam
+WORKDIR /home/steam
+
+# Install SteamCMD
+RUN mkdir -p /home/steam/steamcmd \
+    && curl -sSL "${STEAMCMD_URL}" | tar -xz -C /home/steam/steamcmd
+
+# Install TF2 dedicated server (app 232250)
+RUN /home/steam/steamcmd/steamcmd.sh \
+        +force_install_dir /home/steam/tf2 \
+        +login anonymous \
+        +app_update 232250 validate \
+        +quit
+
+# =============================================================================
+# Stage 2: Install MetaMod:Source and SourceMod
+# =============================================================================
+FROM base AS modded
+
+# Install MetaMod:Source
+RUN curl -sSL "${METAMOD_URL}" \
+    | tar -xz -C /home/steam/tf2/tf/addons/ --strip-components=1
+
+# Install SourceMod
+RUN curl -sSL "${SOURCEMOD_URL}" \
+    | tar -xz -C /home/steam/tf2/tf/addons/ --strip-components=1
+
+# =============================================================================
+# Stage 3: Final image
+# =============================================================================
+FROM modded AS final
+
+# Create mount point directories
+RUN mkdir -p /tf2/configs /tf2/plugins /tf2/maps /tf2/data
+
+# Copy entrypoint script
+COPY --chown=steam:steam entrypoint.sh /home/steam/entrypoint.sh
+
+# Game port (TCP for RCON, UDP for game traffic)
+EXPOSE 27015/tcp
+EXPOSE 27015/udp
+# SourceTV port
+EXPOSE 27020/udp
+
+WORKDIR /home/steam/tf2
+
+ENTRYPOINT ["/home/steam/entrypoint.sh"]

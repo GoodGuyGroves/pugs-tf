@@ -7,7 +7,7 @@
 # since the upstream distributes it as a zip archive.
 { pkgs, helpers }:
 
-helpers.fetchSourceModPluginZip {
+helpers.fetchSourceModPluginZipFlat {
   pname = "logstf";
   version = "unstable-2025-09-08";
   url = "https://sourcemod.krus.dk/logstf.zip";

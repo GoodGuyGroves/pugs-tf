@@ -26,7 +26,7 @@
     hostname = "pugs.tf pugA";
     enableFakeIP = true;
     configs = self.packages.x86_64-linux.configs;
-    plugins = self.packages.x86_64-linux.configs; # placeholder — will be .plugins once all plugins are built (Issue #11)
+    plugins = self.packages.x86_64-linux.plugins;
     rconPasswordFile = "/run/secrets/pugA_rcon"; # placeholder path — real path comes from sops-nix (Issue #16)
     mapsDir = "/var/lib/tf2/maps";
   };
@@ -38,7 +38,7 @@
     hostname = "pugs.tf pugB";
     enableFakeIP = true;
     configs = self.packages.x86_64-linux.configs;
-    plugins = self.packages.x86_64-linux.configs; # placeholder — will be .plugins once all plugins are built (Issue #11)
+    plugins = self.packages.x86_64-linux.plugins;
     rconPasswordFile = "/run/secrets/pugB_rcon"; # placeholder path — real path comes from sops-nix (Issue #16)
     mapsDir = "/var/lib/tf2/maps";
   };

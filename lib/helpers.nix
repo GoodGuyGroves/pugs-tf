@@ -132,4 +132,157 @@
         platforms = pkgs.lib.platforms.linux;
       } // meta;
     };
+
+  # ---------------------------------------------------------------------------
+  # fetchSourceModPluginZipFlat
+  # ---------------------------------------------------------------------------
+  # Fetch a SourceMod plugin distributed as a zip containing .smx files
+  # directly at the archive root (no sub-directories like plugins/).
+  #
+  # This is common for krus.dk plugins which ship a single .smx in a zip.
+  # Produces $out/addons/sourcemod/plugins/<name>.smx for each .smx found.
+  fetchSourceModPluginZipFlat =
+    {
+      pname,
+      version,
+      url,
+      hash,
+      meta ? { },
+      ...
+    }@args:
+    let
+      extra = builtins.removeAttrs args [
+        "pname"
+        "version"
+        "meta"
+      ];
+      src = pkgs.fetchzip (
+        {
+          inherit url hash;
+          stripRoot = false;
+          name = "${pname}-${version}-source";
+        }
+        // (builtins.removeAttrs extra [ "url" "hash" ])
+      );
+    in
+    pkgs.stdenv.mkDerivation {
+      inherit pname version;
+      dontUnpack = true;
+
+      installPhase = ''
+        runHook preInstall
+
+        mkdir -p "$out/addons/sourcemod/plugins"
+        for smx in "${src}"/*.smx; do
+          [ -f "$smx" ] && cp "$smx" "$out/addons/sourcemod/plugins/"
+        done
+
+        runHook postInstall
+      '';
+
+      meta = {
+        platforms = pkgs.lib.platforms.linux;
+      } // meta;
+    };
+
+  # ---------------------------------------------------------------------------
+  # fetchSourceModPluginZipNested
+  # ---------------------------------------------------------------------------
+  # Fetch a SourceMod plugin distributed as a zip where SourceMod directories
+  # live under an addons/sourcemod/ prefix (e.g. addons/sourcemod/plugins/).
+  #
+  # The derivation copies the entire addons/ tree into $out/.
+  # This handles plugins like SOAP-TF2DM, RGL server resources, and
+  # SteamWorks that include addons/ at the archive root.
+  fetchSourceModPluginZipNested =
+    {
+      pname,
+      version,
+      url,
+      hash,
+      meta ? { },
+      ...
+    }@args:
+    let
+      extra = builtins.removeAttrs args [
+        "pname"
+        "version"
+        "meta"
+      ];
+      src = pkgs.fetchzip (
+        {
+          inherit url hash;
+          stripRoot = false;
+          name = "${pname}-${version}-source";
+        }
+        // (builtins.removeAttrs extra [ "url" "hash" ])
+      );
+    in
+    pkgs.stdenv.mkDerivation {
+      inherit pname version;
+      dontUnpack = true;
+
+      installPhase = ''
+        runHook preInstall
+
+        mkdir -p "$out"
+        if [ -d "${src}/addons" ]; then
+          cp -r "${src}/addons" "$out/addons"
+        fi
+
+        runHook postInstall
+      '';
+
+      meta = {
+        platforms = pkgs.lib.platforms.linux;
+      } // meta;
+    };
+
+  # ---------------------------------------------------------------------------
+  # fetchSourceModPluginTarNested
+  # ---------------------------------------------------------------------------
+  # Like fetchSourceModPluginZipNested but for tar.gz archives.
+  fetchSourceModPluginTarNested =
+    {
+      pname,
+      version,
+      url,
+      hash,
+      meta ? { },
+      ...
+    }@args:
+    let
+      extra = builtins.removeAttrs args [
+        "pname"
+        "version"
+        "meta"
+      ];
+      src = pkgs.fetchzip (
+        {
+          inherit url hash;
+          stripRoot = false;
+          name = "${pname}-${version}-source";
+        }
+        // (builtins.removeAttrs extra [ "url" "hash" ])
+      );
+    in
+    pkgs.stdenv.mkDerivation {
+      inherit pname version;
+      dontUnpack = true;
+
+      installPhase = ''
+        runHook preInstall
+
+        mkdir -p "$out"
+        if [ -d "${src}/addons" ]; then
+          cp -r "${src}/addons" "$out/addons"
+        fi
+
+        runHook postInstall
+      '';
+
+      meta = {
+        platforms = pkgs.lib.platforms.linux;
+      } // meta;
+    };
 }
