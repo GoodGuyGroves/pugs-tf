@@ -8,20 +8,12 @@
 {
   imports = [
     ./nginx.nix
+    ./podman.nix
     ./secrets.nix
   ];
 
   # -- Networking -------------------------------------------------------
   networking.hostName = "tf2";
-
-  # -- Virtualisation ---------------------------------------------------
-  # Podman is used as the container runtime for all game-server and
-  # bot containers, orchestrated via quadlet-nix.
-  virtualisation.podman = {
-    enable = true;
-    dockerCompat = true;          # provide a `docker` alias
-    defaultNetwork.settings.dns_enabled = true;
-  };
 
   # -- TF2 Servers ------------------------------------------------------
   services.tf2Server.pugA = {
