@@ -1,61 +1,95 @@
-from pydantic import BaseModel, field_validator, HttpUrl
-from typing import List
-import json
-import os
-from functools import lru_cache
+"""
+Backward-compatible config wrapper for FastDL.
 
-class ServerConfig(BaseModel):
-    name: str
-    tf_dir: str
-    
-    @field_validator('tf_dir')
-    @classmethod
-    def validate_tf_dir(cls, v: str) -> str:
-        v = v.rstrip('/')
-        if not os.path.exists(v):
-            raise ValueError(f"tf_dir path does not exist: {v}")
-        if not os.path.isdir(v):
-            raise ValueError(f"tf_dir path is not a directory: {v}")
-        return v
+All configuration now lives in miss_pauling.config.  This module re-exports
+the unified settings and provides the snake_case attribute names that
+existing FastDL code expects.
+"""
 
-class Settings(BaseModel):
-    servers: List[ServerConfig]
-    maps_dir: str
-    allowed_map_extensions: List[str]
-    max_map_file_size: int
-    mapcycles: List[str]
-    cors_origins: List[str]
-    cors_methods: List[str]
-    cors_headers: List[str]
-    allowed_hosts: List[str]
-    website_base_url: HttpUrl = HttpUrl("http://localhost:8000")
-    
-    @field_validator('maps_dir')
-    @classmethod
-    def validate_maps_dir(cls, v: str) -> str:
-        v = v.rstrip('/')
-        if not os.path.exists(v):
-            raise ValueError(f"maps_dir path does not exist: {v}")
-        if not os.path.isdir(v):
-            raise ValueError(f"maps_dir path is not a directory: {v}")
-        return v
-    
-    @field_validator('website_base_url', mode='before')
-    @classmethod
-    def validate_website_base_url(cls, v):
-        # Remove trailing slash before HttpUrl validation
-        if isinstance(v, str):
-            return v.rstrip('/')
-        return v
+from __future__ import annotations
 
-def load_settings() -> Settings:
-    """Load server settings"""
-    with open('settings.json', 'r') as f:
-        data = json.load(f)
-    return Settings(**data)
+from typing import Any
 
-@lru_cache()
-def get_settings() -> Settings:
-    return load_settings()
+from miss_pauling.config import (
+    Settings as _UnifiedSettings,
+    FastDLServerConfig as ServerConfig,
+    get_settings as _get_unified_settings,
+)
+
+
+class _FastDLSettingsProxy:
+    """Thin proxy that adapts the unified Settings to the interface
+    expected by existing FastDL code."""
+
+    def __init__(self, unified: _UnifiedSettings) -> None:
+        object.__setattr__(self, "_unified", unified)
+
+    # -- FastDL servers (legacy list) ----------------------------------------
+    @property
+    def servers(self) -> list[ServerConfig]:
+        return self._unified.fastdl_servers
+
+    @property
+    def maps_dir(self) -> str:
+        return self._unified.maps_dir
+
+    @property
+    def allowed_map_extensions(self) -> list[str]:
+        return self._unified.allowed_map_extensions
+
+    @property
+    def max_map_file_size(self) -> int:
+        return self._unified.max_map_file_size
+
+    @property
+    def mapcycles(self) -> list[str]:
+        return self._unified.mapcycles
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return self._unified.cors_origins
+
+    @property
+    def cors_methods(self) -> list[str]:
+        return self._unified.cors_methods
+
+    @property
+    def cors_headers(self) -> list[str]:
+        return self._unified.cors_headers
+
+    @property
+    def allowed_hosts(self) -> list[str]:
+        return self._unified.allowed_hosts
+
+    @property
+    def website_base_url(self) -> str:
+        return self._unified.website_base_url
+
+    # -- Fallthrough for anything else ---------------------------------------
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._unified, name)
+
+    def __repr__(self) -> str:
+        return (
+            f"FastDLSettings(maps_dir={self.maps_dir!r}, "
+            f"servers={len(self.servers)}, "
+            f"mapcycles={self.mapcycles!r})"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Public API (matches the old module interface)
+# ---------------------------------------------------------------------------
+
+Settings = _UnifiedSettings
+
+
+def load_settings() -> _FastDLSettingsProxy:
+    return _FastDLSettingsProxy(_get_unified_settings())
+
+
+def get_settings() -> _FastDLSettingsProxy:
+    return _FastDLSettingsProxy(_get_unified_settings())
+
 
 settings = get_settings()
