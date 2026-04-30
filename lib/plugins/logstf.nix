@@ -11,7 +11,7 @@ helpers.fetchSourceModPluginZipFlat {
   pname = "logstf";
   version = "unstable-2025-09-08";
   url = "https://sourcemod.krus.dk/logstf.zip";
-  hash = "sha256-pQpattmS9VmO3ZIQUFn66az8GSmB4IvYhTTCFn6SUmo=";
+  hash = "sha256-zY7ga+9542MWMYFRBCTdASqTB/PP8gRmMI5PzODiIUY=";
 
   # The upstream WAF blocks requests without a browser-like User-Agent.
   curlOptsList = [
