@@ -2,3 +2,7 @@ result
 result-*
 .direnv
 .envrc
+
+# sops-nix: never commit unencrypted secrets
+# (The encrypted secrets/secrets.yaml IS safe to commit once sops-encrypted)
+secrets/secrets.yaml

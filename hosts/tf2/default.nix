@@ -6,6 +6,8 @@
 { config, pkgs, self, ... }:
 
 {
+  imports = [ ./secrets.nix ];
+
   # -- Networking -------------------------------------------------------
   networking.hostName = "tf2";
 
@@ -27,7 +29,10 @@
     enableFakeIP = true;
     configs = self.packages.x86_64-linux.configs;
     plugins = self.packages.x86_64-linux.plugins;
-    rconPasswordFile = "/run/secrets/pugA_rcon"; # placeholder path — real path comes from sops-nix (Issue #16)
+    rconPasswordFile = config.sops.secrets."pugA_rcon_password".path;
+    svPasswordFile = config.sops.secrets."sv_password".path;
+    demostfApiKeyFile = config.sops.secrets."demostf_api_key".path;
+    logstfApiKeyFile = config.sops.secrets."logstf_api_key".path;
     mapsDir = "/var/lib/tf2/maps";
   };
 
@@ -39,7 +44,10 @@
     enableFakeIP = true;
     configs = self.packages.x86_64-linux.configs;
     plugins = self.packages.x86_64-linux.plugins;
-    rconPasswordFile = "/run/secrets/pugB_rcon"; # placeholder path — real path comes from sops-nix (Issue #16)
+    rconPasswordFile = config.sops.secrets."pugB_rcon_password".path;
+    svPasswordFile = config.sops.secrets."sv_password".path;
+    demostfApiKeyFile = config.sops.secrets."demostf_api_key".path;
+    logstfApiKeyFile = config.sops.secrets."logstf_api_key".path;
     mapsDir = "/var/lib/tf2/maps";
   };
 
@@ -51,11 +59,10 @@
     fastdlDomain = "fastdl.pugs.tf";
     discordApplicationId = "PLACEHOLDER";
     discordPublicKey = "PLACEHOLDER";
-    # Secret file paths are placeholders — real paths come from sops-nix (Issue #16)
-    discordClientSecretFile = "/run/secrets/discord_client_secret";
-    discordTokenFile = "/run/secrets/discord_token";
-    steamApiKeyFile = "/run/secrets/steam_api_key";
-    apiSecretKeyFile = "/run/secrets/api_secret_key";
+    discordClientSecretFile = config.sops.secrets."discord_client_secret".path;
+    discordTokenFile = config.sops.secrets."discord_token".path;
+    steamApiKeyFile = config.sops.secrets."steam_api_key".path;
+    apiSecretKeyFile = config.sops.secrets."api_secret_key".path;
     mapsDir = "/var/lib/tf2/maps";
   };
 
@@ -65,7 +72,6 @@
   # -- Future configuration ---------------------------------------------
   # TODO: import hardware-configuration.nix once the machine is provisioned
   # TODO: comin (GitOps) configuration for automatic deployments (Issue #19)
-  # TODO: sops-nix secret declarations (Issue #16)
   # TODO: nginx reverse proxy for Miss Pauling + FastDL (Issue #17)
   # TODO: firewall rules for game ports, SourceTV, and HTTP (Issue #20)
 }

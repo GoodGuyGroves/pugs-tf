@@ -1,0 +1,13 @@
+keys:
+  # The TF2 server's SSH host key will be used for decryption.
+  # This is a placeholder — replace with the actual age public key
+  # derived from the server's /etc/ssh/ssh_host_ed25519_key after
+  # provisioning:
+  #   nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'
+  - &tf2_server age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+creation_rules:
+  - path_regex: secrets/.*\.yaml$
+    key_groups:
+      - age:
+          - *tf2_server
