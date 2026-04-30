@@ -97,14 +97,23 @@
       # ---------------------------------------------------------------
       # Packages — will hold miss-pauling, tf2-server-wrapper, etc.
       # ---------------------------------------------------------------
-      packages.x86_64-linux = {
-        configs = import ./lib/configs { pkgs = pkgsFor "x86_64-linux"; };
+      packages.x86_64-linux =
+        let
+          pkgs = pkgsFor "x86_64-linux";
+          helpers = import ./lib/helpers.nix { inherit pkgs; };
+        in
+        {
+          configs = import ./lib/configs { inherit pkgs; };
 
-        # Populated in later issues:
-        # miss-pauling       = ...;
-        # tf2-server-wrapper = ...;
-        # plugins            = ...;
-      };
+          # SourceMod plugins
+          plugin-logstf = import ./lib/plugins/logstf.nix { inherit pkgs helpers; };
+          plugin-demostf = import ./lib/plugins/demostf.nix { inherit pkgs helpers; };
+          plugin-p4sstime = import ./lib/plugins/p4sstime.nix { inherit pkgs helpers; };
+
+          # Populated in later issues:
+          # miss-pauling       = ...;
+          # tf2-server-wrapper = ...;
+        };
 
       # ---------------------------------------------------------------
       # Dev shells
