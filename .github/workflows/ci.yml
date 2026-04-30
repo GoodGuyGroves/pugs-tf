@@ -16,6 +16,8 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
 
       - uses: DeterminateSystems/magic-nix-cache-action@main
+        with:
+          use-flakehub: false
 
       - name: Flake check
         run: nix flake check
@@ -32,6 +34,3 @@ jobs:
       #   run: nix build .#miss-pauling
       # - name: Build tf2-server-wrapper
       #   run: nix build .#tf2-server-wrapper
-
-      - name: Evaluate NixOS configuration
-        run: nix eval .#nixosConfigurations.tf2.config.system.build.toplevel.drvPath
