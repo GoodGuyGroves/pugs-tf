@@ -8,6 +8,7 @@ from miss_pauling.shared.repositories import UserRepository
 from miss_pauling.website.models.responses import UserValidationResponse
 from miss_pauling.website.services.tf2_service import tf2_service, ServerStatus
 from miss_pauling.website.services.logs_service import logs_service, GameLog
+from miss_pauling.website.services.server_registry import registry
 
 router = APIRouter(prefix="/api", tags=["API"])
 
@@ -97,9 +98,14 @@ async def validate_session(
         raise HTTPException(status_code=500, detail=f"Session validation failed: {str(e)}")
 
 
-@router.get("/servers", response_model=List[ServerStatus])
-async def get_servers_status():
-    """Get status of all configured TF2 servers"""
+@router.get("/servers/rcon", response_model=List[ServerStatus])
+async def get_servers_status_rcon():
+    """Get detailed status of all TF2 servers via RCON.
+
+    This is the legacy endpoint that queries each server directly.  For
+    lightweight status information prefer ``GET /api/servers`` which reads
+    from the in-memory server registry (populated by heartbeats).
+    """
     try:
         servers = await tf2_service.get_all_servers_status()
         return servers

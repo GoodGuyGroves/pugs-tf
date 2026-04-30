@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from miss_pauling.website.core.config import settings
-from miss_pauling.website.routers import auth, profile, api, admin
+from miss_pauling.website.routers import auth, profile, api, admin, servers
 from miss_pauling.shared.database import engine, Base, get_db
 from miss_pauling.shared.models import User, Role, UserRole, RoleType
 from miss_pauling.website.models.auth import UserInfo
@@ -128,5 +128,6 @@ async def root(
 
 app.include_router(profile.router)
 app.include_router(auth.router)
+app.include_router(servers.router)
 app.include_router(api.router)
 app.include_router(admin.router)
