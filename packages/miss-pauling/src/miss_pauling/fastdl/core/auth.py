@@ -1,8 +1,11 @@
-import httpx
 from typing import Optional, List
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, Depends
 from pydantic import BaseModel
-from .config import settings
+from sqlalchemy.orm import Session
+
+from miss_pauling.shared.database import get_db
+from miss_pauling.shared.repositories import UserRepository
+
 
 class AuthenticatedUser(BaseModel):
     """User information from authentication"""
@@ -13,69 +16,67 @@ class AuthenticatedUser(BaseModel):
     roles: List[str] = []
     is_authenticated: bool = True
 
-class AuthClient:
-    """HTTP client for authenticating with the main website API"""
-    
-    def __init__(self):
-        self.website_base_url = str(settings.website_base_url).rstrip('/')
-        self.client = httpx.AsyncClient(timeout=10.0)
-    
-    async def validate_session(self, session_token: str) -> Optional[AuthenticatedUser]:
-        """
-        Validate a session cookie by calling the website's API
-        Returns user info if valid, None if invalid
-        """
-        try:
-            response = await self.client.get(
-                f"{self.website_base_url}/api/validate/session",
-                cookies={"session_token": session_token}
-            )
-            
-            if response.status_code == 200:
-                user_data = response.json()
-                return AuthenticatedUser(**user_data)
-            elif response.status_code == 401:
-                return None  # Invalid/expired session
-            else:
-                # Unexpected error from website API
-                print(f"Website API error: {response.status_code} - {response.text}")
-                return None
-                
-        except Exception as e:
-            print(f"Error validating session: {e}")
+
+def validate_session(session_token: str, db: Session) -> Optional[AuthenticatedUser]:
+    """
+    Validate a session token directly via the shared database.
+
+    Returns user info if valid, None if invalid/expired.
+    """
+    try:
+        session = UserRepository.get_session(db, session_token)
+        if not session:
             return None
-    
-    async def get_current_user(self, request: Request) -> Optional[AuthenticatedUser]:
-        """
-        Get current user from request session cookie
-        Returns user info if authenticated, None if not
-        """
-        session_token = request.cookies.get("session_token")
-        if not session_token:
+
+        user = UserRepository.get_user_by_id(db, session.user_id)
+        if not user:
             return None
-        
-        return await self.validate_session(session_token)
-    
-    async def close(self):
-        """Close the HTTP client"""
-        await self.client.aclose()
 
-# Global auth client instance
-auth_client = AuthClient()
+        # Get user roles
+        user_roles = UserRepository.get_user_roles(db, user.id)
+        role_names = [role.name.value for role in user_roles]
 
-async def get_current_user(request: Request) -> Optional[AuthenticatedUser]:
-    """
-    FastAPI dependency to get current authenticated user
-    Returns None if not authenticated (doesn't raise exception)
-    """
-    return await auth_client.get_current_user(request)
+        return AuthenticatedUser(
+            user_id=user.id,
+            name=user.name,
+            discord_id=user.discord_id,
+            steam_id64=user.steam_id64,
+            roles=role_names,
+            is_authenticated=True,
+        )
+    except Exception as e:
+        print(f"Error validating session: {e}")
+        return None
 
-async def require_auth(request: Request) -> AuthenticatedUser:
+
+async def get_current_user(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> Optional[AuthenticatedUser]:
     """
-    FastAPI dependency that requires authentication
-    Raises 401 HTTPException if not authenticated
+    FastAPI dependency to get current authenticated user.
+    Returns None if not authenticated (doesn't raise exception).
     """
-    user = await auth_client.get_current_user(request)
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        return None
+
+    return validate_session(session_token, db)
+
+
+async def require_auth(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> AuthenticatedUser:
+    """
+    FastAPI dependency that requires authentication.
+    Raises 401 HTTPException if not authenticated.
+    """
+    session_token = request.cookies.get("session_token")
+    if not session_token:
+        raise HTTPException(status_code=401, detail="Authentication required")
+
+    user = validate_session(session_token, db)
     if not user:
         raise HTTPException(status_code=401, detail="Authentication required")
     return user
@@ -98,22 +99,25 @@ def user_has_role_level(user: AuthenticatedUser, required_level: int) -> bool:
     """Check if user has a role at the required level or higher"""
     if not user.roles:
         return False
-    
+
     user_highest_level = min(get_role_hierarchy(role) for role in user.roles)
     return user_highest_level <= required_level
 
 
-async def require_helper_or_above(request: Request) -> AuthenticatedUser:
+async def require_helper_or_above(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> AuthenticatedUser:
     """
-    FastAPI dependency that requires helper role or above
-    Raises 403 HTTPException if insufficient privileges
+    FastAPI dependency that requires helper role or above.
+    Raises 403 HTTPException if insufficient privileges.
     """
-    user = await require_auth(request)
-    
+    user = await require_auth(request, db)
+
     if not user_has_role_level(user, 3):  # helper level = 3
         raise HTTPException(
-            status_code=403, 
+            status_code=403,
             detail="Helper privileges or above required for this action"
         )
-    
+
     return user

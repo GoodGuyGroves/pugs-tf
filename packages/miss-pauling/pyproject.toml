@@ -25,6 +25,9 @@ dependencies = [
     "websockets>=15.0.1",
 ]
 
+[project.scripts]
+miss-pauling = "miss_pauling.main:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
