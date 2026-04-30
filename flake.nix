@@ -98,11 +98,12 @@
       # Packages — will hold miss-pauling, tf2-server-wrapper, etc.
       # ---------------------------------------------------------------
       packages.x86_64-linux = {
+        configs = import ./lib/configs { pkgs = pkgsFor "x86_64-linux"; };
+
         # Populated in later issues:
-        # miss-pauling     = ...;
+        # miss-pauling       = ...;
         # tf2-server-wrapper = ...;
-        # configs          = ...;
-        # plugins          = ...;
+        # plugins            = ...;
       };
 
       # ---------------------------------------------------------------
