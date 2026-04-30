@@ -11,7 +11,7 @@ helpers.fetchSourceModPluginTarNested {
   pname = "steamworks";
   version = "git132";
   url = "https://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git132-linux.tar.gz";
-  hash = "sha256-47HA4oIcl4bARxpOR7rO49xeTrqIfJkDgEbHJg4NtTg=";
+  hash = "sha256-sNdw4pQcciFVPv7nkK9b/36AjyS1rfHkC8wkyj5znYU=";
 
   meta = {
     description = "SteamWorks extension providing Steam API access for SourceMod";
