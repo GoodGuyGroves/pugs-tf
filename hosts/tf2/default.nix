@@ -6,7 +6,10 @@
 { config, pkgs, self, ... }:
 
 {
-  imports = [ ./secrets.nix ];
+  imports = [
+    ./nginx.nix
+    ./secrets.nix
+  ];
 
   # -- Networking -------------------------------------------------------
   networking.hostName = "tf2";
@@ -72,6 +75,5 @@
   # -- Future configuration ---------------------------------------------
   # TODO: import hardware-configuration.nix once the machine is provisioned
   # TODO: comin (GitOps) configuration for automatic deployments (Issue #19)
-  # TODO: nginx reverse proxy for Miss Pauling + FastDL (Issue #17)
   # TODO: firewall rules for game ports, SourceTV, and HTTP (Issue #20)
 }
