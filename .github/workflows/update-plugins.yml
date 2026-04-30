@@ -1,0 +1,51 @@
+name: Update SourceMod Plugins
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Daily at 8 AM UTC
+  workflow_dispatch: {}   # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Check for plugin updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Run nvfetcher
+        run: |
+          nix run nixpkgs#nvfetcher -- \
+            -c lib/plugins/nvfetcher.toml \
+            -o lib/plugins/_sources
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet lib/plugins/_sources/; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No plugin updates found"
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Plugin updates found:"
+            git diff --stat lib/plugins/_sources/
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add lib/plugins/_sources/
+          git commit -m "chore: update SourceMod plugin versions
+
+          Automated update via nvfetcher.
+
+          Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+          git push
