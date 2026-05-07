@@ -1,0 +1,146 @@
+{
+    "auto-steam-update": {
+        "cargoLock": null,
+        "date": "2018-06-27",
+        "extract": null,
+        "name": "auto-steam-update",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "5a8378eb938cbb29d4dd45404a3f4d067c2c58c7",
+            "sha256": "sha256-tCbdpDd+8MExv/vobPcvfwx6GzUkndBMOmx2a8ZIgE0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/Sarabveer/SM-Plugins.git"
+        },
+        "version": "5a8378eb938cbb29d4dd45404a3f4d067c2c58c7"
+    },
+    "demostf": {
+        "cargoLock": null,
+        "date": "2025-05-21",
+        "extract": null,
+        "name": "demostf",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "d8d313b53883d6bc33d959c7f4e6eb75c3f4dc5d",
+            "sha256": "sha256-JbxeuKC3jKMmBhNXsJZJxLAy3/984Zweo20gNND3XW0=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/demostf/plugin.git"
+        },
+        "version": "d8d313b53883d6bc33d959c7f4e6eb75c3f4dc5d"
+    },
+    "mapdownloader": {
+        "cargoLock": null,
+        "date": "2025-06-15",
+        "extract": null,
+        "name": "mapdownloader",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "rev": "729db2ea9e7f353ca67d2c7c19e1cd1dc473928c",
+            "sha256": "sha256-vc6wfjGZf2qoyRzfWgLzuP1q/pnRoS/VPsntva89E6s=",
+            "sparseCheckout": [],
+            "type": "git",
+            "url": "https://github.com/spiretf/mapdownloader.git"
+        },
+        "version": "729db2ea9e7f353ca67d2c7c19e1cd1dc473928c"
+    },
+    "neocurl": {
+        "cargoLock": null,
+        "date": null,
+        "extract": null,
+        "name": "neocurl",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "sapphonie",
+            "repo": "SM-neocurl-ext",
+            "rev": "v2.0.1-beta1",
+            "sha256": "sha256-R4DnH8oJ1dsh/NfCNRHx8/yTSAo7liWrbQALk4u2esI=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v2.0.1-beta1"
+    },
+    "p4sstime": {
+        "cargoLock": null,
+        "date": null,
+        "extract": null,
+        "name": "p4sstime",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "p4sstime",
+            "repo": "p4sstime-server-resources",
+            "rev": "v2.6.3",
+            "sha256": "sha256-77BeUJMoLibnGG4uaQPdx+r4+95Q1S5Ho6nCDwMcW5U=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v2.6.3"
+    },
+    "rgl-server-resources": {
+        "cargoLock": null,
+        "date": null,
+        "extract": null,
+        "name": "rgl-server-resources",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "RGLgg",
+            "repo": "server-resources-updater",
+            "rev": "v372",
+            "sha256": "sha256-ah5SaYjewGPlaUc3oybro6MG/fWSlJZyNA4OlLAgOD8=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v372"
+    },
+    "soap": {
+        "cargoLock": null,
+        "date": null,
+        "extract": null,
+        "name": "soap",
+        "passthru": null,
+        "pinned": false,
+        "src": {
+            "deepClone": false,
+            "fetchSubmodules": false,
+            "leaveDotGit": false,
+            "name": null,
+            "owner": "sapphonie",
+            "repo": "SOAP-TF2DM",
+            "rev": "v4.4.8",
+            "sha256": "sha256-/asvj8w+F3lGlH4sfsSvOS3ACrXOp8gCLmpagehfANg=",
+            "sparseCheckout": [],
+            "type": "github"
+        },
+        "version": "v4.4.8"
+    }
+}
