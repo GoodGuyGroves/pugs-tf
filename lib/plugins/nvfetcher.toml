@@ -3,11 +3,7 @@
 # nvfetcher configuration for automated SourceMod plugin hash updates.
 # Run `nvfetcher` in this directory to check for new releases.
 
-# --- GitHub-hosted plugins ---
-
-[demostf]
-src.github = "demostf/plugin"
-fetch.github = "demostf/plugin"
+# --- GitHub-hosted plugins with releases ---
 
 [p4sstime]
 src.github = "p4sstime/p4sstime-server-resources"
@@ -25,13 +21,19 @@ fetch.github = "sapphonie/SM-neocurl-ext"
 src.github = "RGLgg/server-resources-updater"
 fetch.github = "RGLgg/server-resources-updater"
 
+# --- GitHub-hosted plugins without releases (track default branch HEAD) ---
+
+[demostf]
+src.git = "https://github.com/demostf/plugin.git"
+fetch.git = "https://github.com/demostf/plugin.git"
+
 [mapdownloader]
-src.github = "spiretf/mapdownloader"
-fetch.github = "spiretf/mapdownloader"
+src.git = "https://github.com/spiretf/mapdownloader.git"
+fetch.git = "https://github.com/spiretf/mapdownloader.git"
 
 [auto-steam-update]
-src.github = "Sarabveer/SM-Plugins"
-fetch.github = "Sarabveer/SM-Plugins"
+src.git = "https://github.com/Sarabveer/SM-Plugins.git"
+fetch.git = "https://github.com/Sarabveer/SM-Plugins.git"
 
 # --- krus.dk plugins (no versioning, use manual source) ---
 # These plugins have no version numbers or release tags.
